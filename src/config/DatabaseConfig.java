@@ -83,7 +83,7 @@ public class DatabaseConfig {
     private static final String USER = "postgres";
 
     // ⚠️ CHANGE THIS: Put the actual password you created when installing PostgreSQL on your machine
-    private static final String PASSWORD = "your_postgres_password";
+    private static final String PASSWORD = "HananDB";
 
     public static Connection getConnection() throws SQLException {
         try {
