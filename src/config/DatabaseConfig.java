@@ -26,6 +26,8 @@ public class DatabaseConfig {
     }
 }
 */
+/*
+// H2 In-Memory Database Configuration
 
 package config;
 
@@ -63,5 +65,33 @@ public class DatabaseConfig {
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
+    }
+}
+ */
+
+package config;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class DatabaseConfig {
+    // 5432 is the standard PostgreSQL port. campus_flow is your database name.
+    private static final String URL = "jdbc:postgresql://localhost:5432/campus_flow";
+
+    // Change "postgres" to your database username if you customized it during setup
+    private static final String USER = "postgres";
+
+    // ⚠️ CHANGE THIS: Put the actual password you created when installing PostgreSQL on your machine
+    private static final String PASSWORD = "your_postgres_password";
+
+    public static Connection getConnection() throws SQLException {
+        try {
+            // This explicitly loads the PostgreSQL driver from your pom.xml
+            Class.forName("org.postgresql.Driver");
+            return DriverManager.getConnection(URL, USER, PASSWORD);
+        } catch (ClassNotFoundException e) {
+            throw new SQLException("PostgreSQL JDBC Driver missing from project libraries.", e);
+        }
     }
 }

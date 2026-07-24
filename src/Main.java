@@ -63,7 +63,7 @@ public class Main {
     }
 }
 */
-
+/*
 import repository.UserRepository;
 import repository.ResourceRepository;
 import repository.BookingRepository;
@@ -97,6 +97,17 @@ public class Main {
         mainMenu.start();
 
         System.out.println("\nSystem shut down cleanly. Goodbye!");
+    }
+}*/
+
+import ui.ConsoleApp;
+
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("🚀 Booting CampusFlow Core Systems...");
+
+        // Hand off control directly to the console interface engine
+        ConsoleApp.main(args);
     }
 }
 

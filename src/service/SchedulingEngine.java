@@ -34,7 +34,7 @@ public class SchedulingEngine {
 
         // 4. Construct the Booking object matching all 7 expected parameters
         Booking newBooking = new Booking(
-                0,                          // bookingId: 0 tells DB to auto-generate it
+                null,                       // 🎯 bookingId: null tells the system the PostgreSQL 18 uuidv7 engine will generate it
                 resource.getResourceId(),   // resourceId
                 user.getUserId(),           // userId
                 startTime,                  // startTime

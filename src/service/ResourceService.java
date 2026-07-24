@@ -12,16 +12,21 @@ public class ResourceService {
         this.resourceRepository = resourceRepository;
     }
 
-    // Changed from findAll() to match your repository's exact method name
     public List<Resource> getAllResources() {
         return resourceRepository.getAllResources();
     }
 
+    // 🎯 NEW: Direct pipeline to stream designated department assets straight to the UI
+    public List<Resource> getResourcesByDepartment(String department) {
+        if (department == null || department.isBlank()) return List.of();
+        return resourceRepository.getResourcesByDepartment(department.trim());
+    }
+
     public List<Resource> getResourcesByType(String type) {
-        if (type == null) return List.of();
+        if (type == null || type.isBlank()) return List.of();
 
         return resourceRepository.getAllResources().stream()
-                .filter(r -> r.getType().equalsIgnoreCase(type.trim()))
+                .filter(r -> r.getType() != null && r.getType().equalsIgnoreCase(type.trim()))
                 .collect(Collectors.toList());
     }
 

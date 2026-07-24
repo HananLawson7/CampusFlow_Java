@@ -5,6 +5,7 @@ import service.UserService;
 import service.ResourceService;
 import service.BookingService;
 import service.SchedulingEngine;
+import util.Validation; // 🛡️ Imported the standalone validation utility class
 
 import java.util.Optional;
 import java.util.Scanner;
@@ -57,8 +58,21 @@ public class ConsoleMenu {
         System.out.print("Enter Password: ");
         String password = scanner.nextLine().trim();
 
-        if (username.isEmpty() || password.isEmpty()) {
-            System.out.println("⚠️ Username or password cannot be empty.");
+        // 🛡️ LEVEL 1: Centralized Empty/Blank Check
+        if (!Validation.isNotEmpty(username) || !Validation.isNotEmpty(password)) {
+            System.out.println("⚠️ Validation Error: Fields cannot be empty or blank.");
+            return;
+        }
+
+        // 🛡️ LEVEL 2: Format & Character Sanity Check
+        if (!Validation.isValidUsername(username)) {
+            System.out.println("⚠️ Validation Error: Username contains invalid characters or length rules.");
+            return;
+        }
+
+        // 🛡️ LEVEL 3: Core Length Verification Check
+        if (!Validation.isValidPassword(password)) {
+            System.out.println("⚠️ Validation Error: Password does not meet security length minimums.");
             return;
         }
 
