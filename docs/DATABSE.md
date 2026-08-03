@@ -32,3 +32,9 @@ VALUES ('cs_hod', 'hodpass', 'HOD', 'Computer Science', '{"office_room": "Lab 30
 INSERT INTO users (username, password, role, department, metadata) 
 VALUES ('st_alex', 'studpass', 'STUDENT', 'Computer Science', '{"year_of_study": 3, "major": "Computer Science"}');
 ```
+## Test Credentials & Seed Flows
+You can use the following accounts to verify role-based authentication and navigation across the console UI:
+
+* 🎓 **Student Flow:** Username: `st_alex` | Password: `studpass`
+* 🔑 **HOD Flow:** Username: `cs_hod` | Password: `hodpass`
+* 🛡️ **Admin Flow:** Username: `sys_admin` | Password: `adminpass`
