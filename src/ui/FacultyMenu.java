@@ -2,11 +2,12 @@ package ui;
 
 import model.User;
 import model.Resource;
+import repository.BookingRepository;
+import repository.ResourceRepository;
 import service.ResourceService;
 import service.SchedulingEngine;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Scanner;
 
@@ -15,10 +16,11 @@ public class FacultyMenu {
     private final SchedulingEngine schedulingEngine;
     private final Scanner scanner;
 
-    public FacultyMenu(ResourceService resourceService, SchedulingEngine schedulingEngine, Scanner scanner) {
-        this.resourceService = resourceService;
-        this.schedulingEngine = schedulingEngine;
+    // 🔑 Updated constructor: takes only Scanner and initializes services internally
+    public FacultyMenu(Scanner scanner) {
         this.scanner = scanner;
+        this.resourceService = new ResourceService(new ResourceRepository());
+        this.schedulingEngine = new SchedulingEngine(new BookingRepository());
     }
 
     public void display(User faculty) {

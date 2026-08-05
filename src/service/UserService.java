@@ -21,7 +21,7 @@ public class UserService {
         }
 
         // Delegate lookup to database layer
-        User user = userRepository.authenticate(username.trim(), password);
+        User user = userRepository.findByUsernameAndPassword(username.trim(), password);
 
         // Return wrapped in an Optional container to protect the UI layer from handling raw null values
         return Optional.ofNullable(user);

@@ -2,6 +2,8 @@ package ui;
 
 import model.User;
 import model.Resource;
+import repository.BookingRepository;
+import repository.ResourceRepository;
 import service.ResourceService;
 import service.SchedulingEngine;
 
@@ -15,10 +17,16 @@ public class StudentMenu {
     private final SchedulingEngine schedulingEngine;
     private final Scanner scanner;
 
-    public StudentMenu(ResourceService resourceService, SchedulingEngine schedulingEngine, Scanner scanner) {
+    /*public StudentMenu(ResourceService resourceService, SchedulingEngine schedulingEngine, Scanner scanner) {
         this.resourceService = resourceService;
         this.schedulingEngine = schedulingEngine;
         this.scanner = scanner;
+    }*/
+
+    public StudentMenu(Scanner scanner) {
+        this.scanner = scanner;
+        this.resourceService = new ResourceService(new ResourceRepository());
+        this.schedulingEngine = new SchedulingEngine(new BookingRepository());
     }
 
     public void display(User student) {

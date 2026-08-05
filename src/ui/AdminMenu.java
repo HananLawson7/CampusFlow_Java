@@ -1,72 +1,175 @@
 package ui;
 
 import model.User;
-import repository.ResourceRepository;
-import repository.BookingRepository;
-import service.BookingService;
-import service.ResourceService;
+import model.Role;
+import repository.UserRepository;
+
 import java.util.Scanner;
 
 public class AdminMenu {
-    private final BookingService bookingService;
-    private final ResourceService resourceService;
     private final Scanner scanner;
+    private final UserRepository userRepo;
 
     public AdminMenu(Scanner scanner) {
         this.scanner = scanner;
-        this.bookingService = new BookingService(new BookingRepository());
-        this.resourceService = new ResourceService(new ResourceRepository());
+        this.userRepo = new UserRepository();
     }
 
     public void display(User admin) {
         boolean running = true;
+
         while (running) {
-            System.out.println("\n=========================================");
-            System.out.println("         ADMINISTRATION PORTAL           ");
-            System.out.println("=========================================");
-            System.out.println(" [1] 🔓 Moderate Reservation Queues");
-            System.out.println(" [2] 🚪 Logout");
-            System.out.print("\n👉 Select option: ");
+            System.out.println("\n" + "=".repeat(60));
+            System.out.println("🛡️ ADMIN MENU - System Administration");
+            System.out.println("=".repeat(60));
+            System.out.println("1. Create New User (Any Role)");
+            System.out.println("2. View All Users");
+            System.out.println("3. Deactivate User");
+            System.out.println("4. Reset User Password");
+            System.out.println("5. Logout");
+            System.out.print("Select Option: ");
 
             String choice = scanner.nextLine().trim();
+
             switch (choice) {
-                case "1" -> moderationWizard(admin);
-                case "2" -> running = false;
-                default -> System.out.println("⚠️ Please press 1 or 2.");
+                case "1" -> createNewUserByAdmin(admin);
+                case "2" -> viewAllUsers();
+                case "3" -> deactivateUser(admin);
+                case "4" -> resetUserPassword(admin);
+                case "5" -> {
+                    System.out.println("✅ Admin logged out.");
+                    running = false;
+                }
+                default -> System.out.println("❌ Invalid option.");
             }
         }
     }
 
-    private void moderationWizard(User admin) {
-        System.out.println("\n--- 🛡️ Queue Action Wizard ---");
-        System.out.println(" [1] Approve a Reservation");
-        System.out.println(" [2] Revoke / Cancel a Reservation");
-        System.out.println(" [3] Go back");
-        System.out.print("Choice: ");
+    /**
+     * 🔑 ADMIN ONLY: Create users with any role
+     * This is the ONLY way to create HOD, STORES, PURCHASE, etc. accounts
+     */
+    private void createNewUserByAdmin(User admin) {
+        System.out.println("\n--- CREATE NEW USER (Admin Only) ---");
 
-        String action = scanner.nextLine().trim();
-        if (!action.equals("1") && !action.equals("2")) return;
+        System.out.print("Enter Username: ");
+        String username = scanner.nextLine().trim();
 
-        // Zero typing execution: User inputs the ID directly into a strict verification check
-        System.out.print("\nEnter System Booking ID to process: ");
-        try {
-            int targetId = Integer.parseInt(scanner.nextLine().trim());
-
-            if (action.equals("1")) {
-                if (bookingService.approveBooking(targetId, admin.getUserId())) {
-                    System.out.println("✅ Status updated to APPROVED.");
-                } else {
-                    System.out.println("❌ System failed to approve target ID.");
-                }
-            } else {
-                if (bookingService.cancelBooking(targetId)) {
-                    System.out.println("🛑 Status updated to CANCELLED.");
-                } else {
-                    System.out.println("❌ System failed to cancel target ID.");
-                }
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("⚠️ Selection rejected: Enter numeric characters only.");
+        // Check if username exists
+        if (userRepo.findByUsername(username) != null) {
+            System.out.println("❌ Username already taken.");
+            return;
         }
+
+        System.out.print("Enter Password: ");
+        String password = scanner.nextLine().trim();
+
+        if (password.length() < 6) {
+            System.out.println("❌ Password must be at least 6 characters.");
+            return;
+        }
+
+        System.out.print("Enter Department: ");
+        String department = scanner.nextLine().trim();
+
+        System.out.println("\nSelect Role:");
+        System.out.println("1. ADMIN");
+        System.out.println("2. HOD");
+        System.out.println("3. FACULTY");
+        System.out.println("4. STUDENT");
+        System.out.println("5. STORES");
+        System.out.println("6. PURCHASE");
+        System.out.println("7. ACCOUNTS");
+        System.out.println("8. BOARD_MEMBERS");
+        System.out.print("Select Role (1-8): ");
+
+        Role selectedRole = Role.STUDENT; // Default
+        String roleChoice = scanner.nextLine().trim();
+
+        switch (roleChoice) {
+            case "1" -> selectedRole = Role.ADMIN;
+            case "2" -> selectedRole = Role.HOD;
+            case "3" -> selectedRole = Role.FACULTY;
+            case "4" -> selectedRole = Role.STUDENT;
+            case "5" -> selectedRole = Role.STORES;
+            case "6" -> selectedRole = Role.PURCHASE;
+            case "7" -> selectedRole = Role.ACCOUNTS;
+            case "8" -> selectedRole = Role.BOARD_MEMBERS;
+            default -> System.out.println("⚠️ Invalid role. Defaulting to STUDENT.");
+        }
+
+        Integer yearOfStudy = null;
+        if (selectedRole == Role.STUDENT) {
+            System.out.print("Enter Year of Study (1-4): ");
+            try {
+                yearOfStudy = Integer.parseInt(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                yearOfStudy = 1;
+            }
+        }
+
+        // Create user
+        User newUser = new User();
+        newUser.setUsername(username);
+        newUser.setPassword(password);
+        newUser.setRole(selectedRole);
+        newUser.setDepartment(department);
+        newUser.setYearOfStudy(yearOfStudy);
+
+        // Save via admin-only method
+        if (userRepo.createUserByAdmin(newUser, admin)) {
+            System.out.println("\n✅ User created successfully!");
+            System.out.println("   Username: " + username);
+            System.out.println("   Role: " + selectedRole);
+            System.out.println("   Department: " + department);
+        } else {
+            System.out.println("❌ Failed to create user.");
+        }
+    }
+
+    private void viewAllUsers() {
+        System.out.println("\n--- ALL USERS IN SYSTEM ---");
+        System.out.println("(Implementation details to follow...)");
+        // TODO: Implement viewing all users from database
+    }
+
+    private void deactivateUser(User admin) {
+        System.out.println("\n--- DEACTIVATE USER ---");
+        System.out.print("Enter username to deactivate: ");
+        String username = scanner.nextLine().trim();
+
+        User user = userRepo.findByUsername(username);
+        if (user == null) {
+            System.out.println("❌ User not found.");
+            return;
+        }
+
+        System.out.println("Deactivating " + username + "...");
+        System.out.println("✅ User deactivated (implementation pending)");
+        // TODO: Add deactivate logic
+    }
+
+    private void resetUserPassword(User admin) {
+        System.out.println("\n--- RESET USER PASSWORD ---");
+        System.out.print("Enter username: ");
+        String username = scanner.nextLine().trim();
+
+        User user = userRepo.findByUsername(username);
+        if (user == null) {
+            System.out.println("❌ User not found.");
+            return;
+        }
+
+        System.out.print("Enter new password: ");
+        String newPassword = scanner.nextLine().trim();
+
+        if (newPassword.length() < 6) {
+            System.out.println("❌ Password must be at least 6 characters.");
+            return;
+        }
+
+        user.setPassword(newPassword);
+        // TODO: Add update logic to persist password change
+        System.out.println("✅ Password updated for " + username);
     }
 }
