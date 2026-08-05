@@ -1,31 +1,26 @@
 package ui;
 
 import model.User;
-import service.UserService;
-import service.ResourceService;
-import service.BookingService;
-import service.SchedulingEngine;
-import util.Validation; // 🛡️ Imported the standalone validation utility class
+import model.Role;
+import repository.UserRepository;
+import util.Validation;
 
 import java.util.Optional;
 import java.util.Scanner;
 
+/**
+ * UPDATED ConsoleMenu: Full supply chain routing for 7 roles
+ * - ADMIN, HOD, STUDENT, FACULTY (Existing)
+ * - STORES, PURCHASE, ACCOUNTS, BOARD_MEMBERS (New Supply Chain)
+ */
 public class ConsoleMenu {
     private final Scanner scanner;
-    private final UserService userService;
-    private final ResourceService resourceService;
-    private final BookingService bookingService;
-    private final SchedulingEngine schedulingEngine;
+    private final UserRepository userRepo;
     private boolean isRunning;
 
-    // Dependency injection constructor wiring up all core engines
-    public ConsoleMenu(UserService userService, ResourceService resourceService,
-                       BookingService bookingService, SchedulingEngine schedulingEngine) {
+    public ConsoleMenu() {
         this.scanner = new Scanner(System.in);
-        this.userService = userService;
-        this.resourceService = resourceService;
-        this.bookingService = bookingService;
-        this.schedulingEngine = schedulingEngine;
+        this.userRepo = new UserRepository();
         this.isRunning = true;
     }
 
@@ -36,7 +31,9 @@ public class ConsoleMenu {
     }
 
     private void displayMainMenu() {
-        System.out.println("\n--- MAIN MENU ---");
+        System.out.println("\n" + "=".repeat(60));
+        System.out.println("🔌 WELCOME TO CAMPUSFLOW - SUPPLY CHAIN MANAGEMENT");
+        System.out.println("=".repeat(60));
         System.out.println("1. Login to System");
         System.out.println("2. Exit Application");
         System.out.print("Please select an option: ");
@@ -51,26 +48,29 @@ public class ConsoleMenu {
     }
 
     private void handleLoginFlow() {
-        System.out.println("\n--- USER LOGIN ---");
+        System.out.println("\n" + "=".repeat(60));
+        System.out.println("🔐 USER LOGIN");
+        System.out.println("=".repeat(60));
+
         System.out.print("Enter Username: ");
         String username = scanner.nextLine().trim();
 
         System.out.print("Enter Password: ");
         String password = scanner.nextLine().trim();
 
-        // 🛡️ LEVEL 1: Centralized Empty/Blank Check
+        // 🛡️ VALIDATION LAYER 1: Empty/Blank Check
         if (!Validation.isNotEmpty(username) || !Validation.isNotEmpty(password)) {
             System.out.println("⚠️ Validation Error: Fields cannot be empty or blank.");
             return;
         }
 
-        // 🛡️ LEVEL 2: Format & Character Sanity Check
+        // 🛡️ VALIDATION LAYER 2: Format & Character Sanity Check
         if (!Validation.isValidUsername(username)) {
             System.out.println("⚠️ Validation Error: Username contains invalid characters or length rules.");
             return;
         }
 
-        // 🛡️ LEVEL 3: Core Length Verification Check
+        // 🛡️ VALIDATION LAYER 3: Core Length Verification Check
         if (!Validation.isValidPassword(password)) {
             System.out.println("⚠️ Validation Error: Password does not meet security length minimums.");
             return;
@@ -78,35 +78,66 @@ public class ConsoleMenu {
 
         System.out.println("🚀 Attempting connection for user: " + username);
 
-        // 1. Authenticate against database via UserService
-        Optional<User> authenticatedUser = userService.authenticate(username, password);
+        // Authenticate against database
+        User authenticatedUser = userRepo.findByUsernameAndPassword(username, password);
 
-        if (authenticatedUser.isPresent()) {
-            User user = authenticatedUser.get();
-            System.out.println("✅ Access Granted! Role verified: " + user.getRole());
-
-            // 2. Traffic control: Route user to their corresponding menu type
-            routeToRoleMenu(user);
+        if (authenticatedUser != null) {
+            System.out.println("✅ Access Granted! Role verified: " + authenticatedUser.getRole());
+            routeToRoleMenu(authenticatedUser);
         } else {
             System.out.println("❌ Authentication failed: Invalid credentials.");
         }
     }
 
+    /**
+     * 🔑 CORE ROUTING LOGIC: Routes user to their role-specific menu
+     * Supports all 8 roles (7 supply chain + admin)
+     */
     private void routeToRoleMenu(User user) {
         switch (user.getRole()) {
+            // ========== ACADEMIC ROLES ==========
             case ADMIN -> {
-                AdminMenu adminMenu = new AdminMenu(bookingService, resourceService, scanner);
+                AdminMenu adminMenu = new AdminMenu(scanner);
                 adminMenu.display(user);
             }
             case FACULTY -> {
-                FacultyMenu facultyMenu = new FacultyMenu(resourceService, schedulingEngine, scanner);
+                FacultyMenu facultyMenu = new FacultyMenu(scanner);
                 facultyMenu.display(user);
             }
             case STUDENT -> {
-                StudentMenu studentMenu = new StudentMenu(resourceService, schedulingEngine, scanner);
+                StudentMenu studentMenu = new StudentMenu(scanner);
                 studentMenu.display(user);
             }
-            default -> System.out.println("⚠️ Unknown user role role-clearance. Aborting workflow entry.");
+            case HOD -> {
+                HODMenu hodMenu = new HODMenu(scanner);
+                hodMenu.display(user);
+            }
+
+            // ========== SUPPLY CHAIN ROLES ==========
+            case STORES -> {
+                StoresMenu storesMenu = new StoresMenu(scanner);
+                storesMenu.display(user);
+            }
+            case PURCHASE -> {
+                PurchaseMenu purchaseMenu = new PurchaseMenu(scanner);
+                purchaseMenu.display(user);
+            }
+            case ACCOUNTS -> {
+                AccountsMenu accountsMenu = new AccountsMenu(scanner);
+                accountsMenu.display(user);
+            }
+            case BOARD_MEMBERS -> {
+                BoardMembersMenu boardMenu = new BoardMembersMenu(scanner);
+                boardMenu.display(user);
+            }
+
+            default -> System.out.println("⚠️ Unknown user role. Aborting workflow entry.");
         }
+    }
+
+    public static void main(String[] args) {
+        ConsoleMenu app = new ConsoleMenu();
+        app.start();
+        System.out.println("\n✨ CampusFlow session terminated. Goodbye!");
     }
 }
