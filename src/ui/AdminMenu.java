@@ -1,6 +1,8 @@
 package ui;
 
 import model.User;
+import repository.ResourceRepository;
+import repository.BookingRepository;
 import service.BookingService;
 import service.ResourceService;
 import java.util.Scanner;
@@ -10,10 +12,10 @@ public class AdminMenu {
     private final ResourceService resourceService;
     private final Scanner scanner;
 
-    public AdminMenu(BookingService bookingService, ResourceService resourceService, Scanner scanner) {
-        this.bookingService = bookingService;
-        this.resourceService = resourceService;
+    public AdminMenu(Scanner scanner) {
         this.scanner = scanner;
+        this.bookingService = new BookingService(new BookingRepository());
+        this.resourceService = new ResourceService(new ResourceRepository());
     }
 
     public void display(User admin) {

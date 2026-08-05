@@ -79,7 +79,7 @@ public class ConsoleMenu {
         System.out.println("🚀 Attempting connection for user: " + username);
 
         // Authenticate against database
-        User authenticatedUser = userRepo.findByUsernameAndPassword(username, password);
+        User authenticatedUser = userRepo.authenticate(username, password);
 
         if (authenticatedUser != null) {
             System.out.println("✅ Access Granted! Role verified: " + authenticatedUser.getRole());
