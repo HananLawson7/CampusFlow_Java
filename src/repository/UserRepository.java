@@ -307,4 +307,18 @@ public class UserRepository {
 
         return user;
     }
+    public boolean deactivateUser(int userId) {
+        String sql = "UPDATE users SET status = 'INACTIVE' WHERE user_id = ?";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, userId);
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("Error deactivating user: " + e.getMessage());
+            return false;
+        }
+    }
 }
