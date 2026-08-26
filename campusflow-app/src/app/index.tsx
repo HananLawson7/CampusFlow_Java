@@ -1,32 +1,58 @@
-import { View, Text, TouchableOpacity, FlatList } from "react-native";
+import { useEffect, useRef } from "react";
+import { View, Text, Animated, StyleSheet } from "react-native";
 import { router } from "expo-router";
-import { useTheme } from "../../theme/ThemeContext";
+import { useTheme } from "../theme/ThemeContext";
 
-const ROLES = ["ADMIN", "HOD", "FACULTY", "STUDENT", "STORES", "PURCHASE", "ACCOUNTS", "BOARD_MEMBERS"];
+export default function SplashScreen() {
+    const { colors } = useTheme();
+    const fadeAnim = useRef(new Animated.Value(0)).current;
 
-export default function RoleSelect() {
-  const { colors, toggle } = useTheme();
-  return (
-      <View style={{ flex: 1, backgroundColor: colors.bg, padding: 20, paddingTop: 60 }}>
-        <TouchableOpacity onPress={toggle} style={{ alignSelf: "flex-end", marginBottom: 20 }}>
-          <Text style={{ color: colors.text2 }}>Toggle theme</Text>
-        </TouchableOpacity>
-        <Text style={{ fontSize: 22, fontWeight: "500", color: colors.text, marginBottom: 24 }}>
-          Select your role
-        </Text>
-        <FlatList
-            data={ROLES}
-            numColumns={2}
-            keyExtractor={(r) => r}
-            renderItem={({ item }) => (
-                <TouchableOpacity
-                    onPress={() => router.push({ pathname: "/login", params: { role: item } })}
-                    style={{ flex: 1, margin: 6, padding: 20, borderRadius: 12, backgroundColor: colors.surface, borderWidth: 0.5, borderColor: colors.border }}
-                >
-                  <Text style={{ color: colors.text, fontWeight: "500" }}>{item}</Text>
-                </TouchableOpacity>
-            )}
-        />
-      </View>
-  );
+    useEffect(() => {
+        // Animation Sequence: Fade In (800ms) -> Hold (1200ms) -> Fade Out (600ms)
+        Animated.sequence([
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 800,
+                useNativeDriver: true,
+            }),
+            Animated.delay(1200),
+            Animated.timing(fadeAnim, {
+                toValue: 0,
+                duration: 600,
+                useNativeDriver: true,
+            }),
+        ]).start(() => {
+            // Replaces the splash screen with the login screen so users can't navigate back
+            router.replace("/role-select");
+        });
+    }, [fadeAnim]);
+
+    return (
+        <View style={[styles.container, { backgroundColor: colors.bg }]}>
+            <Animated.View style={{ opacity: fadeAnim, alignItems: "center" }}>
+                <Text style={[styles.title, { color: colors.text }]}>CampusFlow</Text>
+                <Text style={[styles.subtitle, { color: colors.text2 }]}>
+                    Automated Campus Management
+                </Text>
+            </Animated.View>
+        </View>
+    );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    title: {
+        fontSize: 36,
+        fontWeight: "bold",
+        letterSpacing: 1.2,
+    },
+    subtitle: {
+        fontSize: 14,
+        marginTop: 8,
+        letterSpacing: 0.5,
+    },
+});

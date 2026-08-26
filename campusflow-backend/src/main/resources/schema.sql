@@ -12,7 +12,8 @@ CREATE TABLE users (
                        password VARCHAR(100) NOT NULL,
                        role VARCHAR(20) NOT NULL CHECK (role IN ('ADMIN', 'FACULTY', 'HOD', 'STUDENT', 'STORES', 'PURCHASE', 'ACCOUNTS', 'BOARD_MEMBERS')),
                        department VARCHAR(50) NOT NULL,
-                       year_of_study INT -- Nullable for Faculty/Admins/Dept Heads, populated for students
+                       year_of_study INT, -- Nullable for Faculty/Admins/Dept Heads, populated for students
+                       status VARCHAR(10) NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'INACTIVE'))
 );
 
 -- 2. RESOURCES TABLE (Inventory Master)

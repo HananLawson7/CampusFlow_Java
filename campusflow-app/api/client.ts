@@ -1,4 +1,4 @@
-const BASE_URL = "http://YOUR_LOCAL_IP:4567/api"; // your machine's LAN IP
+const BASE_URL = "http://192.168.56.1:4567/api"; // your machine's LAN IP
 
 async function request(path: string, options: RequestInit = {}) {
     const res = await fetch(`${BASE_URL}${path}`, {
@@ -13,9 +13,9 @@ async function request(path: string, options: RequestInit = {}) {
 export const api = {
     login: (username: string, password: string) =>
         request("/login", { method: "POST", body: JSON.stringify({ username, password }) }),
-    getAllUsers: () => request("/admin/users"),
+    getAllUsers: () => request("/admin/all-users"),
     createUser: (payload: any) =>
-        request("/admin/users", { method: "POST", body: JSON.stringify(payload) }),
+        request("/admin/create-user", { method: "POST", body: JSON.stringify(payload) }),
     deactivateUser: (id: number) =>
         request(`/admin/users/${id}/deactivate`, { method: "PATCH" }),
     resetPassword: (id: number, newPassword: string) =>
@@ -33,8 +33,8 @@ export const api = {
     createPO: (payload: any) => request("/purchase/orders", { method: "POST", body: JSON.stringify(payload) }),
     getAllPOs: () => request("/purchase/orders"),
 
-    getCreatedPOs: () => request("/accounts/created"),
-    getBilledPOs: () => request("/accounts/billed"),
+    getCreatedPOs: () => request("/accounts/created-pos"),
+    getBilledPOs: () => request("/accounts/billed-pos"),
     getPaidPOs: () => request("/accounts/paid"),
     markBilled: (id: number) => request(`/accounts/orders/${id}/bill`, { method: "PATCH" }),
     markPaid: (id: number) => request(`/accounts/orders/${id}/pay`, { method: "PATCH" }),

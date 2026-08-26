@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { router } from "expo-router";
-import { useTheme } from "../../../theme/ThemeContext";
+import { useTheme } from "../../theme/ThemeContext";
+import { useAuth } from "../../store/AuthContext";
 
 export default function HODDashboard() {
     const { colors } = useTheme();
