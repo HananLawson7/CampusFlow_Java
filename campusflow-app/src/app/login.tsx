@@ -2,8 +2,8 @@ import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { useTheme } from "../theme/ThemeContext";
-import { useAuth } from "../../store/AuthContext";
-import { api } from "../../api/client";
+import { useAuth } from "../store/AuthContext";
+import { api } from "../api/client";
 
 export default function Login() {
     const searchParams = useLocalSearchParams();

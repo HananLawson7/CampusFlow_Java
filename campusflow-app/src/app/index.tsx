@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { View, Text, Animated, StyleSheet } from "react-native";
 import { router } from "expo-router";
 import { useTheme } from "../theme/ThemeContext";
+import { useAuth } from "../store/AuthContext";
 
 export default function SplashScreen() {
     const { colors } = useTheme();
