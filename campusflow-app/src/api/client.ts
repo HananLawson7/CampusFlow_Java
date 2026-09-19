@@ -118,7 +118,7 @@ export const api = {
     getVendorSpending: () => request("/accounts/vendor-spending"),
 };
 */
-
+/*
 import { Platform } from "react-native";
 
 // Resolves backend address based on target platform
@@ -158,4 +158,113 @@ export const api = {
             method: "POST",
             body: JSON.stringify({ username, password }),
         }),
+};
+*/
+
+import { Platform } from "react-native";
+
+const getBaseUrl = () => {
+    if (Platform.OS === "android") {
+        // Physical Android device connected to the same Wi-Fi network
+        // as the computer running the Java backend.
+        return "http://192.168.1.6:4567/api";
+    }
+
+    // Web / iOS Simulator
+    return "http://localhost:4567/api";
+};
+
+const BASE_URL = getBaseUrl();
+
+async function request(path: string, options: RequestInit = {}) {
+    const url = `${BASE_URL}${path}`;
+
+    try {
+        console.log(`[API] ${options.method || "GET"} ${url}`);
+
+        const res = await fetch(url, {
+            ...options,
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                ...options.headers,
+            },
+        });
+
+        // Read as text first so a non-JSON backend response
+        // doesn't cause an unexplained SyntaxError.
+        const rawResponse = await res.text();
+
+        console.log(`[API] Response ${res.status}:`, rawResponse);
+
+        let data: any = null;
+
+        if (rawResponse.trim()) {
+            try {
+                data = JSON.parse(rawResponse);
+            } catch {
+                throw new Error(
+                    `Server returned invalid JSON (HTTP ${res.status}): ${rawResponse}`
+                );
+            }
+        }
+
+        if (!res.ok) {
+            throw new Error(
+                data?.error ||
+                data?.message ||
+                `Request failed with HTTP ${res.status}`
+            );
+        }
+
+        return data;
+    } catch (error: any) {
+        console.error(
+            `[API ERROR] ${options.method || "GET"} ${url}:`,
+            error?.message || error
+        );
+
+        throw error;
+    }
+}
+export const api = {
+    login: (username: string, password: string) =>
+        request("/login", {
+            method: "POST",
+            body: JSON.stringify({ username, password }),
+        }),
+
+    // Admin
+    getAllUsers: () => request("/admin/users"),
+    createUser: (payload: any) =>
+        request("/admin/users", { method: "POST", body: JSON.stringify(payload) }),
+    deactivateUser: (id: number) =>
+        request(`/admin/users/${id}/deactivate`, { method: "PATCH" }),
+    resetPassword: (id: number, newPassword: string) =>
+        request(`/admin/users/${id}/password`, { method: "PATCH", body: JSON.stringify({ newPassword }) }),
+
+    // HOD
+    submitRequest: (payload: any) =>
+        request("/hod/requests", { method: "POST", body: JSON.stringify(payload) }),
+    getMyRequests: (hodId: number) => request(`/hod/requests/${hodId}`),
+
+    // Stores
+    getPendingRequests: () => request("/stores/pending"),
+    processRequest: (id: number) =>
+        request(`/stores/requests/${id}/process`, { method: "PATCH" }),
+    getInventory: () => request("/stores/inventory"),
+
+    // Purchase
+    getPendingPRs: () => request("/purchase/pending"),
+    createPO: (payload: any) =>
+        request("/purchase/orders", { method: "POST", body: JSON.stringify(payload) }),
+    getAllPOs: () => request("/purchase/orders"),
+
+    // Accounts
+    getCreatedPOs: () => request("/accounts/created"),
+    getBilledPOs: () => request("/accounts/billed"),
+    getPaidPOs: () => request("/accounts/paid"),
+    markBilled: (id: number) => request(`/accounts/orders/${id}/bill`, { method: "PATCH" }),
+    markPaid: (id: number) => request(`/accounts/orders/${id}/pay`, { method: "PATCH" }),
+    getVendorSpending: () => request("/accounts/vendor-spending"),
 };

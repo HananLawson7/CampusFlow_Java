@@ -33,7 +33,7 @@ export default function SplashScreen() {
             <Animated.View style={{ opacity: fadeAnim, alignItems: "center" }}>
                 <Text style={[styles.title, { color: colors.text }]}>CampusFlow</Text>
                 <Text style={[styles.subtitle, { color: colors.text2 }]}>
-                    Automated Campus Management
+                    Automated Campus Resource Management
                 </Text>
             </Animated.View>
         </View>
