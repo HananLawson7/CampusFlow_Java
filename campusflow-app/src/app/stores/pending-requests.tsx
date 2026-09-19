@@ -27,7 +27,12 @@ export default function PendingRequests() {
     const process = async (id: number) => {
         try {
             const result = await api.processRequest(id);
-            Alert.alert("Processed", result?.status || "Request processed successfully");
+            const statusMessages: any = {
+                FULFILLED_FROM_STOCK: "Request fulfilled from stock",
+                FORWARDED_TO_PURCHASE: "Awaiting Purchase Approval",
+                ALREADY_FORWARDED: "This request has already been forwarded to Purchase",
+            };
+            Alert.alert("Success", statusMessages[result?.status] || result?.status || "Request processed");
             load();
         } catch (e: any) {
             Alert.alert("Error", e.message || "Failed to process request");
@@ -49,38 +54,44 @@ export default function PendingRequests() {
                     ListEmptyComponent={
                         <Text style={{ color: colors.text2, marginTop: 12 }}>No pending requests found.</Text>
                     }
-                    renderItem={({ item }) => (
-                        <View
-                            style={{
-                                padding: 14,
-                                backgroundColor: colors.surface,
-                                borderRadius: 10,
-                                borderWidth: 0.5,
-                                borderColor: colors.border,
-                                marginBottom: 8,
-                            }}
-                        >
-                            <Text style={{ color: colors.text, fontWeight: "500" }}>
-                                Resource #{item.resourceId} — Qty: {item.quantity}
-                            </Text>
-
-                            <TouchableOpacity
-                                onPress={() => process(item.requestId || item.id)}
+                    renderItem={({ item }) => {
+                        const canProcess = item.quantityInStock >= item.quantity;
+                        return (
+                            <View
                                 style={{
-                                    marginTop: 8,
-                                    alignSelf: "flex-start",
-                                    paddingVertical: 6,
-                                    paddingHorizontal: 12,
-                                    backgroundColor: colors.accentBg,
-                                    borderRadius: 8,
+                                    padding: 14,
+                                    backgroundColor: colors.surface,
+                                    borderRadius: 10,
+                                    borderWidth: 0.5,
+                                    borderColor: colors.border,
+                                    marginBottom: 8,
                                 }}
                             >
-                                <Text style={{ color: colors.accent, fontSize: 12, fontWeight: "500" }}>
-                                    Process
+                                <Text style={{ color: colors.text, fontWeight: "500" }}>
+                                    {item.resourceName || `Resource #${item.resourceId}`} — Qty: {item.quantity}
                                 </Text>
-                            </TouchableOpacity>
-                        </View>
-                    )}
+                                <Text style={{ color: colors.text2, fontSize: 12, marginTop: 2 }}>
+                                    In stock: {item.quantityInStock}
+                                </Text>
+
+                                <TouchableOpacity
+                                    onPress={() => process(item.requestId || item.id)}
+                                    style={{
+                                        marginTop: 8,
+                                        alignSelf: "flex-start",
+                                        paddingVertical: 6,
+                                        paddingHorizontal: 12,
+                                        backgroundColor: canProcess ? colors.accentBg : "#F5D5C0",
+                                        borderRadius: 8,
+                                    }}
+                                >
+                                    <Text style={{ color: canProcess ? colors.accent : "#B85C2E", fontSize: 12, fontWeight: "500" }}>
+                                        {canProcess ? "Process" : "Forward to Purchase"}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        );
+                    }}
                 />
             )}
         </View>
