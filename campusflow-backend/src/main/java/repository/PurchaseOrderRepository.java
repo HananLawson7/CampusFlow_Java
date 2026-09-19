@@ -3,7 +3,6 @@ package repository;
 import config.DatabaseConfig;
 import model.PurchaseOrder;
 
-import java.math.BigDecimal;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -171,6 +170,29 @@ public class PurchaseOrderRepository {
             System.err.println("Error getting vendor spending: " + e.getMessage());
         }
         return results;
+    }
+
+    public java.util.List<model.PurchaseOrder> getAllPurchaseOrders() {
+        java.util.List<model.PurchaseOrder> orders = new java.util.ArrayList<>();
+        String query = "SELECT * FROM purchase_orders"; // Update table name if yours differs
+
+        try (java.sql.Connection conn = config.DatabaseConfig.getConnection();
+             java.sql.Statement stmt = conn.createStatement();
+             java.sql.ResultSet rs = stmt.executeQuery(query)) {
+
+            while (rs.next()) {
+                model.PurchaseOrder order = new model.PurchaseOrder(
+                        rs.getInt("pr_id"),
+                        rs.getString("vendor_name"),
+                        rs.getBigDecimal("total_cost"),
+                        rs.getString("notes")
+                );
+                orders.add(order);
+            }
+        } catch (java.sql.SQLException e) {
+            System.err.println("Error fetching purchase orders: " + e.getMessage());
+        }
+        return orders;
     }
 
     // ============ HELPER METHODS ============

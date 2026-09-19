@@ -1,0 +1,61 @@
+CampusFlow/
+├── campusflow-backend/
+│   ├── pom.xml                              ✅ done
+│   └── src/main/java/
+│       ├── config/DatabaseConfig.java       ✅ existing
+│       ├── model/
+│       │   ├── User.java                    ✅ existing
+│       │   ├── Role.java                    ✅ existing
+│       │   ├── Resource.java                ✅ existing
+│       │   ├── ProductRequest.java          ✅ existing
+│       │   ├── PurchaseRequest.java         ✅ existing
+│       │   └── PurchaseOrder.java           ✅ existing
+│       ├── repository/
+│       │   ├── UserRepository.java          ✅ existing
+│       │   ├── ResourceRepository.java      ✅ existing
+│       │   ├── ProductRequestRepository.java ✅ existing
+│       │   ├── PurchaseRequestRepository.java ✅ existing
+│       │   └── PurchaseOrderRepository.java  ✅ existing
+│       └── api/
+│           ├── ApiServer.java               ✅ given
+│           ├── AuthController.java          ✅ given
+│           ├── AdminController.java         ✅ given
+│           ├── HODController.java           ✅ given
+│           ├── StoresController.java        ✅ given
+│           ├── PurchaseController.java      ✅ given
+│           └── AccountsController.java      ✅ given
+│
+└── campusflow-app/
+    ├── package.json                          ✅ given
+    ├── app.json                              ✅ given
+    ├── babel.config.js                       ✅ given
+    ├── tsconfig.json                         ✅ given
+    ├── theme/ThemeContext.tsx                ✅ given
+    ├── store/AuthContext.tsx                 ✅ given
+    ├── api/client.ts                         ✅ given (extend with role calls — given)
+    └── app/
+        ├── _layout.tsx                       ✅ given
+        ├── index.tsx                         ✅ given
+        ├── login.tsx                         ✅ given
+        ├── admin/
+        │   ├── dashboard.tsx                 ✅ given
+        │   ├── create-user.tsx               ✅ given
+        │   └── all-users.tsx                 🆕 below
+        ├── hod/
+        │   ├── dashboard.tsx                 ✅ given
+        │   ├── submit-request.tsx            ✅ given
+        │   └── my-requests.tsx               ✅ given
+        ├── stores/
+        │   ├── dashboard.tsx                 ✅ given (pattern)
+        │   ├── pending-requests.tsx          ✅ given
+        │   └── inventory.tsx                 ✅ given
+        ├── purchase/
+        │   ├── dashboard.tsx                 ✅ given (pattern)
+        │   ├── pending-prs.tsx               🆕 below
+        │   ├── create-po.tsx                 ✅ given
+        │   └── all-pos.tsx                   🆕 below
+        └── accounts/
+            ├── dashboard.tsx                 ✅ given (pattern)
+            ├── created-pos.tsx               ✅ given
+            ├── billed-pos.tsx                🆕 below
+            └── payment-history.tsx           🆕 below

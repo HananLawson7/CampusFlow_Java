@@ -19,7 +19,8 @@ public class UserRepository {
      * Used for login authentication
      */
     public User findByUsernameAndPassword(String username, String password) {
-        String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+        String sql = "SELECT * FROM users WHERE username = ? AND password = ? " +
+                "AND (status IS NULL OR status = 'ACTIVE')";
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {

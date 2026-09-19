@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.UUID;
 
 public class BookingRepository {
 
@@ -46,19 +47,25 @@ public class BookingRepository {
         }
     }
 
-    public boolean updateBookingStatus(int bookingId, String status, Integer approvedBy) {
+    /**
+     * Updates booking status using a UUID booking ID.
+     */
+    public boolean updateBookingStatus(UUID bookingId, String status, Integer approvedBy) {
         String query = "UPDATE bookings SET status = ?, approved_by = ? WHERE booking_id = ?";
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, status);
+
             if (approvedBy != null) {
                 stmt.setInt(2, approvedBy);
             } else {
                 stmt.setNull(2, java.sql.Types.INTEGER);
             }
-            stmt.setInt(3, bookingId);
+
+            // 🎯 Use setObject to safely pass UUID to PostgreSQL
+            stmt.setObject(3, bookingId);
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {

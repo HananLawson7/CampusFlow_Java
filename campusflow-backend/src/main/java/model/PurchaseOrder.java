@@ -18,7 +18,9 @@ public class PurchaseOrder {
     private String notes;
 
     // Constructors
-    public PurchaseOrder() {}
+    public PurchaseOrder() {
+        this.status = "CREATED";
+    }
 
     public PurchaseOrder(int prId, String vendorName, BigDecimal totalCost, String notes) {
         this.prId = prId;

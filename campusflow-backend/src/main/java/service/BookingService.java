@@ -1,10 +1,9 @@
 package service;
 
-import model.Booking;
 import repository.BookingRepository;
-import java.util.List;
+import java.util.UUID;
 
-public class BookingService1 {
+public class BookingService {
     private final BookingRepository bookingRepository;
 
     public BookingService(BookingRepository bookingRepository) {
@@ -12,24 +11,23 @@ public class BookingService1 {
     }
 
     /**
-     * Handles administrative workflows to approve pending reservations.
+     * Handles administrative workflows to approve pending reservations using a UUID booking ID.
      */
-    public boolean approveBooking(int bookingId, int adminUserId) {
-        // Business Rule validation: Ensure zero values or missing tracking references are rejected
-        if (bookingId <= 0 || adminUserId <= 0) {
+    public boolean approveBooking(UUID bookingId, int adminUserId) {
+        // Business Rule validation: Ensure reference parameters are present
+        if (bookingId == null || adminUserId <= 0) {
             return false;
         }
 
-        // Abstraction placeholder to update tracking parameters inside PostgreSQL
         System.out.println("Processing approval for Booking #" + bookingId + " by Admin User #" + adminUserId);
         return bookingRepository.updateBookingStatus(bookingId, "APPROVED", adminUserId);
     }
 
     /**
-     * Handles systemic cancellation flows.
+     * Handles systemic cancellation flows using a UUID booking ID.
      */
-    public boolean cancelBooking(int bookingId) {
-        if (bookingId <= 0) return false;
+    public boolean cancelBooking(UUID bookingId) {
+        if (bookingId == null) return false;
         return bookingRepository.updateBookingStatus(bookingId, "CANCELLED", null);
     }
 }

@@ -1,18 +1,21 @@
 package model;
 
 import java.time.LocalDateTime;
-import java.util.UUID; // 🛡️ Added standard Java UUID support
+import java.util.UUID;
 
 public class Booking {
-    private UUID bookingId;      // 🎯 Changed from int to UUID for PostgreSQL 18 compatibility
+    private UUID bookingId;      // UUID for identifier
     private int resourceId;
     private int userId;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String status;       // PENDING, APPROVED, REJECTED, CANCELLED
-    private Integer approvedBy;  // Uses Integer instead of int to allow for null values
+    private Integer approvedBy;  // Nullable ID of the approver
 
-    // 🎯 Constructor updated to accept java.util.UUID
+    // Empty Constructor
+    public Booking() {}
+
+    // Parameterized Constructor
     public Booking(UUID bookingId, int resourceId, int userId, LocalDateTime startTime, LocalDateTime endTime, String status, Integer approvedBy) {
         this.bookingId = bookingId;
         this.resourceId = resourceId;
@@ -23,7 +26,7 @@ public class Booking {
         this.approvedBy = approvedBy;
     }
 
-    // 🎯 Getter and Setter updated to handle UUID objects
+    // Getters and Setters
     public UUID getBookingId() { return bookingId; }
     public void setBookingId(UUID bookingId) { this.bookingId = bookingId; }
 

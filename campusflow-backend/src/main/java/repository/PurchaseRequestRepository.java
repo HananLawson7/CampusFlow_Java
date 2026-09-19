@@ -111,6 +111,30 @@ public class PurchaseRequestRepository {
         return executeQuery(sql);
     }
 
+    public java.util.List<model.ProductRequest> getAllPurchaseRequests() {
+        java.util.List<model.ProductRequest> requests = new java.util.ArrayList<>();
+        // Adjust table name if your purchase requests are stored in a table named 'purchase_requests' or similar
+        String query = "SELECT request_id, resource_id, quantity, notes FROM purchase_requests";
+
+        try (java.sql.Connection conn = config.DatabaseConfig.getConnection();
+             java.sql.Statement stmt = conn.createStatement();
+             java.sql.ResultSet rs = stmt.executeQuery(query)) {
+
+            while (rs.next()) {
+                model.ProductRequest req = new model.ProductRequest(
+                        rs.getInt("request_id"),
+                        rs.getInt("resource_id"),
+                        rs.getInt("quantity"),
+                        rs.getString("notes")
+                );
+                requests.add(req);
+            }
+        } catch (java.sql.SQLException e) {
+            System.err.println("Error fetching purchase requests: " + e.getMessage());
+        }
+        return requests;
+    }
+
     // ============ HELPER METHODS ============
 
     private List<PurchaseRequest> executeQuery(String sql) {

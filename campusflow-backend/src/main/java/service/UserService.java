@@ -4,7 +4,7 @@ import model.User;
 import repository.UserRepository;
 import java.util.Optional;
 
-public class UserService1 {
+public class UserService {
     private final UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {

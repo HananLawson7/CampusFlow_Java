@@ -6,7 +6,7 @@ import model.Booking;
 import repository.BookingRepository;
 import java.time.LocalDateTime;
 
-public class SchedulingEngine1 {
+public class SchedulingEngine {
     private final BookingRepository bookingRepository;
 
     public SchedulingEngine(BookingRepository bookingRepository) {

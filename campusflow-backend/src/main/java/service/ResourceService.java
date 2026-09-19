@@ -5,7 +5,7 @@ import repository.ResourceRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ResourceService1 {
+public class ResourceService {
     private final ResourceRepository resourceRepository;
 
     public ResourceService(ResourceRepository resourceRepository) {
