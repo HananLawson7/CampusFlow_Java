@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState, useCallback } from "react";
 import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert } from "react-native";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { useTheme } from "../../theme/ThemeContext";
 import { api } from "../../api/client"; // Fixed import path
 
@@ -21,9 +21,11 @@ export default function PendingPRs() {
         }
     };
 
-    useEffect(() => {
-        loadPRs();
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            loadPRs();
+        }, [])
+    );
 
     return (
         <View style={{ flex: 1, backgroundColor: colors.bg, padding: 24, paddingTop: 60 }}>

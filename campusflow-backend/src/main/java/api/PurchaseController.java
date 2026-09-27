@@ -18,13 +18,18 @@ public class PurchaseController {
 
         post("/api/purchase/orders", (req, res) -> {
             Map<String, Object> body = gson.fromJson(req.body(), Map.class);
+            int prId = ((Double) body.get("prId")).intValue();
+
             PurchaseOrder po = new PurchaseOrder();
-            po.setPrId(((Double) body.get("prId")).intValue());
+            po.setPrId(prId);
             po.setVendorName((String) body.get("vendorName"));
             po.setTotalCost(BigDecimal.valueOf(((Number) body.get("totalCost")).doubleValue()));
 
             boolean success = poRepo.createPO(po);
             if (!success) { res.status(400); return gson.toJson(Map.of("error", "Failed to create PO")); }
+
+            prRepo.updatePRStatus(prId, "PO_ISSUED");   // ← added
+
             res.status(201);
             return gson.toJson(Map.of("success", true));
         });
